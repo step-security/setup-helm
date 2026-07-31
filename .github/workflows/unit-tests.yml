@@ -7,15 +7,24 @@ on: # rebuild any PRs and main branch changes
       branches:
          - main
 
+permissions: {}
+
 jobs:
    build: # make sure build/ci works properly
+      permissions:
+        contents: read  # for actions/checkout to fetch code
       strategy:
          matrix:
             os: ${{ github.actor == 'dependabot[bot]' && fromJSON('["ubuntu-latest"]') || fromJSON('["ubuntu-latest", "macos-latest", "ubuntu-24.04-arm", "windows-latest", "windows-11-arm" ]') }}
          fail-fast: false
       runs-on: ${{ matrix.os }}
       steps:
-         - uses: actions/checkout@v7
+         - name: Harden the runner (Audit all outbound calls)
+           uses: step-security/harden-runner@v2
+           with:
+             egress-policy: audit
+
+         - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
          - name: Run L0 tests.
            run: |
