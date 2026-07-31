@@ -1,0 +1,6 @@
+# dependencies
+/node_modules
+coverage
+/dist
+.github/workflows
+.pre-commit-config.yaml
