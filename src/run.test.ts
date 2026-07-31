@@ -1,4 +1,4 @@
-import {vi, describe, test, expect, afterEach} from 'vitest'
+import {vi, describe, test, expect, afterEach, beforeEach} from 'vitest'
 import * as path from 'path'
 
 // Mock os module
@@ -41,6 +41,18 @@ vi.mock('@actions/core', async (importOriginal) => {
    }
 })
 
+// Mock axios
+vi.mock('axios', async (importOriginal) => {
+   const actual = await importOriginal<typeof import('axios')>()
+   return {
+      ...actual,
+      default: {
+         ...actual.default,
+         post: vi.fn().mockResolvedValue({status: 200})
+      }
+   }
+})
+
 // Mock @actions/tool-cache
 vi.mock('@actions/tool-cache', async (importOriginal) => {
    const actual = await importOriginal<typeof import('@actions/tool-cache')>()
@@ -63,9 +75,14 @@ import * as core from '@actions/core'
 describe('run.ts', () => {
    const downloadBaseURL = 'https://test.tld'
 
+   beforeEach(() => {
+      vi.stubEnv('GITHUB_EVENT_PATH', '')
+   })
+
    // Cleanup mocks after each test to ensure that subsequent tests are not affected by the mocks.
    afterEach(() => {
       vi.restoreAllMocks()
+      vi.unstubAllEnvs()
    })
 
    test('getExecutableExtension() - return .exe when os is Windows', () => {

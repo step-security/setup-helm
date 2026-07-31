@@ -3,31 +3,26 @@
    "version": "5.0.1",
    "private": true,
    "description": "Setup helm",
-   "author": "Anumita Shenoy",
+   "author": "step-security",
    "license": "MIT",
    "type": "module",
    "dependencies": {
       "@actions/core": "^3.0.1",
-      "@actions/exec": "^3.0.0",
-      "@actions/io": "^3.0.2",
       "@actions/tool-cache": "4.0.0",
-      "@octokit/action": "^8.0.4",
-      "semver": "^7.8.5"
+      "axios": "^1.18.0"
    },
-   "main": "lib/index.js",
+   "main": "dist/index.js",
    "scripts": {
-      "build": "tsc --noEmit && esbuild src/index.ts --bundle --platform=node --target=node20 --format=esm --outfile=lib/index.js --banner:js=\"import { createRequire } from 'module';const require = createRequire(import.meta.url);\"",
+      "build": "tsc --noEmit && esbuild src/index.ts --bundle --platform=node --target=node24 --format=esm --outfile=dist/index.js --banner:js=\"import { createRequire } from 'module';const require = createRequire(import.meta.url);\"",
       "typecheck": "tsc --noEmit",
       "test": "vitest run",
       "test-coverage": "vitest run --coverage",
       "format": "prettier --write .",
-      "format-check": "prettier --check .",
-      "prepare": "husky"
+      "format-check": "prettier --check ."
    },
    "devDependencies": {
       "@types/node": "^26.1.1",
       "esbuild": "^0.28",
-      "husky": "^9.1.7",
       "prettier": "^3.9.6",
       "typescript": "^7.0.2",
       "vitest": "^4"

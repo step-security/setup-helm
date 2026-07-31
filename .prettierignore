@@ -1,4 +1,6 @@
 # dependencies
 /node_modules
 coverage
-/lib
+/dist
+.github/workflows
+.pre-commit-config.yaml

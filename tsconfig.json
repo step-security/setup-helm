@@ -4,7 +4,7 @@
       "module": "NodeNext",
       "moduleResolution": "NodeNext",
       "rootDir": "./src",
-      "outDir": "./lib",
+      "outDir": "./dist",
       "noImplicitAny": false,
       "skipLibCheck": true,
       "noEmit": true,
