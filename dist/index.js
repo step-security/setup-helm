@@ -4020,11 +4020,11 @@ var require_util2 = __commonJS({
     var { isUint8Array } = __require("node:util/types");
     var { webidl } = require_webidl();
     var supportedHashes = [];
-    var crypto4;
+    var crypto5;
     try {
-      crypto4 = __require("node:crypto");
+      crypto5 = __require("node:crypto");
       const possibleRelevantHashes = ["sha256", "sha384", "sha512"];
-      supportedHashes = crypto4.getHashes().filter((hash) => possibleRelevantHashes.includes(hash));
+      supportedHashes = crypto5.getHashes().filter((hash) => possibleRelevantHashes.includes(hash));
     } catch {
     }
     function responseURL(response) {
@@ -4297,7 +4297,7 @@ var require_util2 = __commonJS({
       }
     }
     function bytesMatch(bytes, metadataList) {
-      if (crypto4 === void 0) {
+      if (crypto5 === void 0) {
         return true;
       }
       const parsedMetadata = parseMetadata(metadataList);
@@ -4312,7 +4312,7 @@ var require_util2 = __commonJS({
       for (const item of metadata) {
         const algorithm = item.algo;
         const expectedValue = item.hash;
-        let actualValue = crypto4.createHash(algorithm).update(bytes).digest("base64");
+        let actualValue = crypto5.createHash(algorithm).update(bytes).digest("base64");
         if (actualValue[actualValue.length - 1] === "=") {
           if (actualValue[actualValue.length - 2] === "=") {
             actualValue = actualValue.slice(0, -2);
@@ -5376,8 +5376,8 @@ var require_body = __commonJS({
     var { multipartFormDataParser } = require_formdata_parser();
     var random;
     try {
-      const crypto4 = __require("node:crypto");
-      random = (max) => crypto4.randomInt(0, max);
+      const crypto5 = __require("node:crypto");
+      random = (max) => crypto5.randomInt(0, max);
     } catch {
       random = (max) => Math.floor(Math.random(max));
     }
@@ -16878,13 +16878,13 @@ var require_frame = __commonJS({
     "use strict";
     var { maxUnsigned16Bit } = require_constants5();
     var BUFFER_SIZE = 16386;
-    var crypto4;
+    var crypto5;
     var buffer = null;
     var bufIdx = BUFFER_SIZE;
     try {
-      crypto4 = __require("node:crypto");
+      crypto5 = __require("node:crypto");
     } catch {
-      crypto4 = {
+      crypto5 = {
         // not full compatibility, but minimum.
         randomFillSync: function randomFillSync(buffer2, _offset, _size) {
           for (let i = 0; i < buffer2.length; ++i) {
@@ -16897,7 +16897,7 @@ var require_frame = __commonJS({
     function generateMask() {
       if (bufIdx === BUFFER_SIZE) {
         bufIdx = 0;
-        crypto4.randomFillSync(buffer ??= Buffer.allocUnsafe(BUFFER_SIZE), 0, BUFFER_SIZE);
+        crypto5.randomFillSync(buffer ??= Buffer.allocUnsafe(BUFFER_SIZE), 0, BUFFER_SIZE);
       }
       return [buffer[bufIdx++], buffer[bufIdx++], buffer[bufIdx++], buffer[bufIdx++]];
     }
@@ -16969,9 +16969,9 @@ var require_connection = __commonJS({
     var { Headers: Headers2, getHeadersList } = require_headers();
     var { getDecodeSplit } = require_util2();
     var { WebsocketFrameSend } = require_frame();
-    var crypto4;
+    var crypto5;
     try {
-      crypto4 = __require("node:crypto");
+      crypto5 = __require("node:crypto");
     } catch {
     }
     function establishWebSocketConnection(url2, protocols, client, ws, onEstablish, options) {
@@ -16991,7 +16991,7 @@ var require_connection = __commonJS({
         const headersList = getHeadersList(new Headers2(options.headers));
         request.headersList = headersList;
       }
-      const keyValue = crypto4.randomBytes(16).toString("base64");
+      const keyValue = crypto5.randomBytes(16).toString("base64");
       request.headersList.append("sec-websocket-key", keyValue);
       request.headersList.append("sec-websocket-version", "13");
       for (const protocol of protocols) {
@@ -17021,7 +17021,7 @@ var require_connection = __commonJS({
             return;
           }
           const secWSAccept = response.headersList.get("Sec-WebSocket-Accept");
-          const digest = crypto4.createHash("sha1").update(keyValue + uid).digest("base64");
+          const digest = crypto5.createHash("sha1").update(keyValue + uid).digest("base64");
           if (secWSAccept !== digest) {
             failWebsocketConnection(ws, "Incorrect hash received in Sec-WebSocket-Accept header.");
             return;
@@ -30711,7 +30711,7 @@ var require_form_data = __commonJS({
     var parseUrl2 = __require("url").parse;
     var fs5 = __require("fs");
     var Stream = __require("stream").Stream;
-    var crypto4 = __require("crypto");
+    var crypto5 = __require("crypto");
     var mime = require_mime_types();
     var asynckit = require_asynckit();
     var setToStringTag = require_es_set_tostringtag();
@@ -30920,7 +30920,7 @@ var require_form_data = __commonJS({
       return Buffer.concat([dataBuffer, Buffer.from(this._lastBoundary())]);
     };
     FormData3.prototype._generateBoundary = function() {
-      this._boundary = "--------------------------" + crypto4.randomBytes(12).toString("hex");
+      this._boundary = "--------------------------" + crypto5.randomBytes(12).toString("hex");
     };
     FormData3.prototype.getLengthSync = function() {
       var knownLength = this._overheadLength + this._valueLength;
@@ -32655,6 +32655,7 @@ import * as os7 from "os";
 import * as path6 from "path";
 import * as util5 from "util";
 import * as fs4 from "fs";
+import * as crypto4 from "crypto";
 
 // node_modules/@actions/core/lib/command.js
 import * as os from "os";
@@ -40142,6 +40143,12 @@ async function getLatestHelmVersion() {
   try {
     const response = await fetch("https://get.helm.sh/helm-latest-version");
     const release = (await response.text()).trim();
+    if (!isSemVerShaped(release)) {
+      warning(
+        `Unexpected version format from get.helm.sh: '${release}'. Using default version ${stableHelmVersion}`
+      );
+      return stableHelmVersion;
+    }
     return release;
   } catch (err) {
     warning(
@@ -40243,6 +40250,18 @@ function getHelmDownloadURL(baseURL, version) {
   const url2 = new URL(urlPath, base);
   return url2.toString();
 }
+function getHelmChecksumURL(baseURL, version) {
+  return getHelmDownloadURL(baseURL, version) + ".sha256";
+}
+async function verifyHelmSHA256(filePath, checksumPath) {
+  const expectedHash = fs4.readFileSync(checksumPath, "utf8").trim().split(/\s+/)[0].toLowerCase();
+  const actualHash = crypto4.createHash("sha256").update(fs4.readFileSync(filePath)).digest("hex");
+  if (actualHash !== expectedHash) {
+    warning(
+      `SHA256 mismatch. Expected: ${expectedHash}, Got: ${actualHash}`
+    );
+  }
+}
 async function downloadHelm(baseURL, version) {
   let cachedToolpath = find(helmToolName, version);
   if (cachedToolpath) {
@@ -40260,6 +40279,17 @@ async function downloadHelm(baseURL, version) {
           baseURL,
           version
         )}`
+      );
+    }
+    try {
+      const checksumPath = await downloadTool(
+        getHelmChecksumURL(baseURL, version)
+      );
+      await verifyHelmSHA256(helmDownloadPath, checksumPath);
+      info("SHA256 verification passed");
+    } catch (err) {
+      warning(
+        `SHA256 verification skipped: ${err instanceof Error ? err.message : String(err)}`
       );
     }
     fs4.chmodSync(helmDownloadPath, "755");

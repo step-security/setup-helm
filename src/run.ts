@@ -6,6 +6,7 @@ import * as os from 'os'
 import * as path from 'path'
 import * as util from 'util'
 import * as fs from 'fs'
+import * as crypto from 'crypto'
 
 import * as toolCache from '@actions/tool-cache'
 import * as core from '@actions/core'
@@ -177,6 +178,12 @@ export async function getLatestHelmVersion(): Promise<string> {
    try {
       const response = await fetch('https://get.helm.sh/helm-latest-version')
       const release = (await response.text()).trim()
+      if (!isSemVerShaped(release)) {
+         core.warning(
+            `Unexpected version format from get.helm.sh: '${release}'. Using default version ${stableHelmVersion}`
+         )
+         return stableHelmVersion
+      }
       return release
    } catch (err) {
       core.warning(
@@ -336,6 +343,30 @@ export function getHelmDownloadURL(baseURL: string, version: string): string {
    return url.toString()
 }
 
+export function getHelmChecksumURL(baseURL: string, version: string): string {
+   return getHelmDownloadURL(baseURL, version) + '.sha256'
+}
+
+export async function verifyHelmSHA256(
+   filePath: string,
+   checksumPath: string
+): Promise<void> {
+   const expectedHash = fs
+      .readFileSync(checksumPath, 'utf8')
+      .trim()
+      .split(/\s+/)[0]
+      .toLowerCase()
+   const actualHash = crypto
+      .createHash('sha256')
+      .update(fs.readFileSync(filePath))
+      .digest('hex')
+   if (actualHash !== expectedHash) {
+      core.warning(
+         `SHA256 mismatch. Expected: ${expectedHash}, Got: ${actualHash}`
+      )
+   }
+}
+
 export async function downloadHelm(
    baseURL: string,
    version: string
@@ -356,6 +387,18 @@ export async function downloadHelm(
                baseURL,
                version
             )}`
+         )
+      }
+
+      try {
+         const checksumPath = await toolCache.downloadTool(
+            getHelmChecksumURL(baseURL, version)
+         )
+         await verifyHelmSHA256(helmDownloadPath, checksumPath)
+         core.info('SHA256 verification passed')
+      } catch (err) {
+         core.warning(
+            `SHA256 verification skipped: ${err instanceof Error ? err.message : String(err)}`
          )
       }
 
