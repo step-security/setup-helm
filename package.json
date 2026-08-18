@@ -9,7 +9,7 @@
    "dependencies": {
       "@actions/core": "^3.0.1",
       "@actions/tool-cache": "4.0.0",
-      "axios": "^1.18.0"
+      "axios": "^1.19.0"
    },
    "main": "dist/index.js",
    "scripts": {
