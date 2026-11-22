@@ -1,0 +1,17 @@
+{
+  "$comment": "Managed automatically when syncing with upstream. Do not edit by hand.",
+  "schema_version": 1,
+  "onboarding_type": "copied",
+  "action_type": "node",
+  "upstream": {
+    "repository": "Azure/setup-helm",
+    "synced_tag": "v5.1.0",
+    "synced_commit": "2f5e7bc67f1f9972ab16657bb795f36d8f04de0e",
+    "archived": false
+  },
+  "build": {
+    "package_manager": "npm@11.12.1",
+    "node_version": "24",
+    "script": "build"
+  }
+}

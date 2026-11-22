@@ -63,5 +63,7 @@ typings/
 node_modules
 coverage
 
+# Transpiled JS
+
 # Planning docs
 docs/

@@ -1,15 +1,16 @@
 {
-   "name": "setuphelm",
-   "version": "5.0.1",
+   "name": "@step-security/setuphelm",
+   "version": "5.1.0",
    "private": true,
    "description": "Setup helm",
    "author": "step-security",
+   "publisher": "step-security",
    "license": "MIT",
    "type": "module",
    "dependencies": {
       "@actions/core": "^3.0.1",
       "@actions/tool-cache": "4.0.0",
-      "axios": "^1.18.0"
+      "axios": "^1.20.0"
    },
    "main": "dist/index.js",
    "scripts": {
@@ -21,10 +22,22 @@
       "format-check": "prettier --check ."
    },
    "devDependencies": {
-      "@types/node": "^26.1.1",
+      "@types/node": "^26.6.6",
       "esbuild": "^0.28.1",
-      "prettier": "^3.9.6",
+      "prettier": "^3.9.10",
       "typescript": "^7.0.2",
-      "vitest": "^4.1.10"
+      "vitest": "^5"
+   },
+   "homepage": "https://github.com/step-security/setup-helm#readme",
+   "repository": {
+      "type": "git",
+      "url": "https://github.com/step-security/setup-helm.git"
+   },
+   "bugs": {
+      "url": "https://github.com/step-security/setup-helm/issues"
+   },
+   "engines": {
+      "node": ">=24",
+      "npm": ">=11"
    }
 }
